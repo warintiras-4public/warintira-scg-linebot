@@ -118,7 +118,7 @@ router.get('/api/abc', (req, res) => {
     res.send(bc);
 });
 
-router.get('/linebot/webhook', (req, res) => {
+router.post('/linebot/webhook', (req, res) => {
         res.send("Hello Webhook!");
     });
     
