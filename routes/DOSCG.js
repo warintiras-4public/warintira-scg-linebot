@@ -119,7 +119,8 @@ router.get('/api/abc', (req, res) => {
 });
 
 router.post('/linebot/webhook', (req, res) => {
-        res.send("Hello Webhook!");
+        // res.send("Hello Webhook!");
+        res.sendStatus(200);
     });
     
 
