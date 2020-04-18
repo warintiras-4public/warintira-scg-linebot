@@ -1,198 +1,112 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const line = require('@line/bot-sdk');
 const router = express.Router();
 
-const abc  = require('../models/DOSCG');
+require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 4000;
 
+const config = {
+    channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
+    channelSecret: process.env.CHANNEL_SECRET
+};
 
-app.use(express.json()); // express.json returns a middleware
+const client = new line.Client(config);
 
-router.get('/', (req, res) => {
-    res.send('Hello SCG!');
+router.post('/linebot/webhook', line.middleware(config), (req, res) => {
+    Promise
+        .all(req.body.events.map(handleEvent))
+        .then((result) => res.json(result));
 });
 
-router.get('/api/direction', async (req, res) => {
-    const api_url = 'https://maps.googleapis.com/maps/api/directions/json?origin=13.805381,100.539025&destination=13.746314,100.539276&key=AIzaSyBf_D5jSKyjwppmtL5Gsu9FR1XOaierZa8';
-    const fetch_response = await fetch(api_url);
-    const json = await fetch_response.json();
-    res.send(json);
-});
+function handleEvent(event) {
 
-router.get('/api/XYZ', (req, res) => {
-    const xyz = [
-        { val: "X" }, 
-        { val: "Y" }, 
-        { val: 5 },  
-        { val: 9 }, 
-        { val: 15 }, 
-        { val: 23 }, 
-        { val: "Z" }
-    ];
-
-    //  Y - X  is  0
-    //  5 - Y  is  2
-    //  9 - 5  is  4
-    // 15 - 9  is  6
-    // 23 - 15 is  8
-    //  Z - 23 is 10
-
-    let arr= [];
-    for (i = 0; i < xyz.length; i++) {
-        if (i > 0) {
-            arr[i]  = xyz[i+1]-(i*2) ;
-        } 
-        // else {
-        //     arr[i] = 0;
-        // }
+    console.log(event);
+    if (event.type === 'message' && event.message.type === 'text') {
+        handleMessageEvent(event);
+    } else {
+        return Promise.resolve(null);
     }
+}
 
-
-
-
-    // let arr= [];
-    // for (i = 0; i < myArray.length; i++) {
-        // text += cars[i] + "<br>";
-    //    if (isNan(myArray[i])) {
-        // arr[i] 
-    //    }
-
-
-    // const five = xyz.find(x => x.val === 5).value;
-    // const nine = xyz.find(x => x.val === 9).value;
-    // const fifteen = xyz.find(x => x.val === 15).value;
-    // const twentythree = xyz.find(x => x.val === 23).value;
-
-    // let arr= [];
-    // for (i = 0; i < myArray.length; i++) {
-        // text += cars[i] + "<br>";
-    //    if (isNan(myArray[i])) {
-        // arr[i] 
-    //    }
-
-        // arr[i] = myArray[];
-    // }
-    
-    // const xyz = [
-    //     { key: 0, value: "X" },
-    //     { key: 1, value: "Y" },
-    //     { key: 2, value: 5 },
-    //     { key: 3, value: 9 },
-    //     { key: 4, value: 15 },
-    //     { key: 5, value: 23 },
-    //     { key: 6, value: "Z" },
-    // ];
-    // const five = model.find(x => x.id === 5).value;
-    // const nine = xyz.find(x => x.value === 9).value;
-    // const fifteen = xyz.find(x => x.value === 15).value;
-    // const twentythree = xyz.find(x => x.value === 23).value;
-    
-    // const XYZ = {
-        // five: five
-        // nine: nine,
-        // fifteen: fifteen,
-        // twentythree: twentythree
-    // };
-    res.send(arr);
-});
-
-router.get('/api/abc', (req, res) => {
-    // const a = 21;
-    // const ab = 23;
-    // const ac = -21;
-    const a = abc.find(x => x.id === "a").value;
-    const ab = abc.find(x => x.id === "ab").value;
-    const ac = abc.find(x => x.id === "ac").value;
-
-    // const b = 23-21;
-    const b = ab-a;
-
-    // const c = -21-21
-    const c = ac-a
-
-    const bc = { 
-        b: b,
-        c: c
+function handleMessageEvent(event) {
+    var msg = {
+        type: 'text',
+        text: 'สวัสดีครัช'
     };
 
-    res.send(bc);
+    return client.replyMessage(event.replyToken, msg);
+}
+
+app.set('port', (process.env.PORT || 5000));
+
+app.listen(app.get('port'), function () {
+    console.log('run at port', app.get('port'));
 });
 
-router.post('/linebot/webhook', (req, res) => {
-        // res.send("Hello Webhook!");
-        // res.sendStatus(200);
-    // });
-    // app.post('/webhook', (req, res) => {
-        let reply_token = req.body.events[0].replyToken
+////////////////////////////////////////////////
+// const express = require('express');
+// const fetch = require('node-fetch');
+// const router = express.Router();
+
+// const abc  = require('../models/DOSCG');
+
+// const app = express();
+// const port = process.env.PORT || 4000;
+
+
+// app.use(express.json()); // express.json returns a middleware
+
+// router.get('/', (req, res) => {
+//     res.send('Hello SCG!');
+// });
+
+// router.get('/api/direction', async (req, res) => {
+//     const api_url = 'https://maps.googleapis.com/maps/api/directions/json?origin=13.805381,100.539025&destination=13.746314,100.539276&key=AIzaSyBf_D5jSKyjwppmtL5Gsu9FR1XOaierZa8';
+//     const fetch_response = await fetch(api_url);
+//     const json = await fetch_response.json();
+//     res.send(json);
+// });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// router.post('/linebot/webhook', (req, res) => {
+//         // res.send("Hello Webhook!");
+//         // res.sendStatus(200);
+//     // });
+//     // app.post('/webhook', (req, res) => {
+//         let reply_token = req.body.events[0].replyToken
         
-        reply(reply_token)
-        res.sendStatus(200)
-    });
-    // app.listen(port)
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+//         reply(reply_token)
+//         res.sendStatus(200)
+//     });
+//     // app.listen(port)
+// app.listen(port, () => console.log(`Listening on port ${port}...`));
 
-    function reply(reply_token) {
-        let headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer {cyNaR/BGrcuuc/AWK9TGrZ0nHbZN2nBOIAbVmn6TsbMIVZQzm+u1swGWFr8UpKVNhF2GIhYWAKI0TQi7CjYYM//R08r2iuPiI/5nkMxWOXf7OG+WaVyIC/1tpJuwz6eemIoQryMErjz42XwGAi/KSQdB04t89/1O/w1cDnyilFU=}'
-        }
-        let body = JSON.stringify({
-            replyToken: reply_token,
-            messages: [{
-                type: 'text',
-                text: 'Hello'
-            },
-            {
-                type: 'text',
-                text: 'How are you?'
-            }]
-        })
-        request.post({
-            url: 'https://api.line.me/v2/bot/message/reply',
-            headers: headers,
-            body: body
-        }, (err, res, body) => {
-            console.log('status = ' + res.statusCode);
-        });
-    }
-
-
-
-
-
-    
-
-// router.post('/', (req, res) => {
-//     const course = {
-//         id: courses.length + 1,
-//         name: req.body.name
-//     };
-//     courses.push(course);
-//     res.send(course);
-// });
-
-
-
-// router.post('/', (req, res) => {
-//     const course = {
-//         id: courses.length + 1,
-//         name: req.body.name
-//     };
-//     courses.push(course);
-//     res.send(course);
-// });
-
-// router.get('/:id', (req, res) => {
-//     const course = courses.find(c => c.id === parseInt(req.params.id));
-//     if (!course) res.status(404).send('The course with the given id was not found.')
-//     res.send(course);
-// });
-
-// app.get('/api/posts/:year/:month', (req, res) => {
-//     // res.send(req.params); // read year and month
-//     res.send(req.query); // read query string
-// });
-
+//     function reply(reply_token) {
+//         let headers = {
+//             'Content-Type': 'application/json',
+//             'Authorization': 'Bearer {cyNaR/BGrcuuc/AWK9TGrZ0nHbZN2nBOIAbVmn6TsbMIVZQzm+u1swGWFr8UpKVNhF2GIhYWAKI0TQi7CjYYM//R08r2iuPiI/5nkMxWOXf7OG+WaVyIC/1tpJuwz6eemIoQryMErjz42XwGAi/KSQdB04t89/1O/w1cDnyilFU=}'
+//         }
+//         let body = JSON.stringify({
+//             replyToken: reply_token,
+//             messages: [{
+//                 type: 'text',
+//                 text: 'Hello'
+//             },
+//             {
+//                 type: 'text',
+//                 text: 'How are you?'
+//             }]
+//         })
+//         request.post({
+//             url: 'https://api.line.me/v2/bot/message/reply',
+//             headers: headers,
+//             body: body
+//         }, (err, res, body) => {
+//             console.log('status = ' + res.statusCode);
+//         });
+//     }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 module.exports = router;
