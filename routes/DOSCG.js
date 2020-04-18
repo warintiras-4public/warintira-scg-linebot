@@ -2,24 +2,24 @@ const express = require('express');
 const fetch = require('node-fetch');
 const router = express.Router();
 
-// const courses  = require('../models/DOSCGModel');
 const abc  = require('../models/DOSCG');
-// const xyz  = require('../models/DOSCGModel');
-// const model  = require('../models/DOSCGModel');
-
 
 const app = express();
 
 app.use(express.json()); // express.json returns a middleware
 
-router.get('/direction', async (req, res) => {
+router.get('/', (req, res) => {
+    res.send('Hello SCG!');
+});
+
+router.get('/api/direction', async (req, res) => {
     const api_url = 'https://maps.googleapis.com/maps/api/directions/json?origin=13.805381,100.539025&destination=13.746314,100.539276&key=AIzaSyBf_D5jSKyjwppmtL5Gsu9FR1XOaierZa8';
     const fetch_response = await fetch(api_url);
     const json = await fetch_response.json();
     res.send(json);
 });
 
-router.get('/XYZ', (req, res) => {
+router.get('/api/XYZ', (req, res) => {
     const xyz = [
         { val: "X" }, 
         { val: "Y" }, 
@@ -96,7 +96,7 @@ router.get('/XYZ', (req, res) => {
     res.send(arr);
 });
 
-router.get('/abc', (req, res) => {
+router.get('/api/abc', (req, res) => {
     // const a = 21;
     // const ab = 23;
     // const ac = -21;
@@ -118,14 +118,19 @@ router.get('/abc', (req, res) => {
     res.send(bc);
 });
 
-router.post('/', (req, res) => {
-    const course = {
-        id: courses.length + 1,
-        name: req.body.name
-    };
-    courses.push(course);
-    res.send(course);
-});
+router.get('/linebot/webhook', (req, res) => {
+        res.send("Hello Webhook!");
+    });
+    
+
+// router.post('/', (req, res) => {
+//     const course = {
+//         id: courses.length + 1,
+//         name: req.body.name
+//     };
+//     courses.push(course);
+//     res.send(course);
+// });
 
 
 
