@@ -124,13 +124,12 @@ router.post('/linebot/webhook', (req, res) => {
         // res.send("Hello Webhook!");
         // res.sendStatus(200);
     // });
-
-
     // app.post('/webhook', (req, res) => {
         let reply_token = req.body.events[0].replyToken
+        
         reply(reply_token)
         res.sendStatus(200)
-    })
+    });
     // app.listen(port)
 app.listen(port, () => console.log(`Listening on port ${port}...`));
 
