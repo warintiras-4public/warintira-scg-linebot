@@ -7,16 +7,17 @@ require('dotenv').config();
 const app = express();
 
 const config = {
-    channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-    channelSecret: process.env.CHANNEL_SECRET
+    channelAccessToken: process.env.channelAccessToken,
+    channelSecret: process.env.channelSecret
 };
 
 const client = new line.Client(config);
 
 router.post('/linebot/webhook', line.middleware(config), (req, res) => {
-    Promise
-        .all(req.body.events.map(handleEvent))
-        .then((result) => res.json(result));
+    console.log(req.body.channelAccessToken);
+    // Promise
+    //     .all(req.body.events.map(handleEvent))
+    //     .then((result) => res.json(result));
 });
 
 function handleEvent(event) {
