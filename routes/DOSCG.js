@@ -131,7 +131,9 @@ router.post('/linebot/webhook', (req, res) => {
         reply(reply_token)
         res.sendStatus(200)
     })
-    app.listen(port)
+    // app.listen(port)
+app.listen(port, () => console.log(`Listening on port ${port}...`));
+
     function reply(reply_token) {
         let headers = {
             'Content-Type': 'application/json',
