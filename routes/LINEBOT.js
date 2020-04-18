@@ -1,19 +1,47 @@
-// const express = require('express');
-// const fetch = require('node-fetch');
-// const router = express.Router();
+const express = require('express');
+const line = require('@line/bot-sdk');
+const router = express.Router();
 
-// const app = express();
-// // app.use(express.json()); // express.json returns a middleware
+require('dotenv').config();
 
-// // router.get('/direction', async (req, res) => {
-// //     const api_url = 'https://maps.googleapis.com/maps/api/directions/json?origin=13.805381,100.539025&destination=13.746314,100.539276&key=AIzaSyBf_D5jSKyjwppmtL5Gsu9FR1XOaierZa8';
-// //     const fetch_response = await fetch(api_url);
-// //     const json = await fetch_response.json();
-// //     res.send(json);
-// // });
+const app = express();
 
-// // router.get('/webhook', (req, res) => {
-// //     res.send("Hello Webhook!");
-// // });
+const config = {
+    channelAccessToken: process.env.channelAccessToken,
+    channelSecret: process.env.channelSecret
+};
 
-// module.exports = router;
+const client = new line.Client(config);
+
+router.post('/linebot/webhook', line.middleware(config), (req, res) => {
+    Promise
+        .all(req.body.events.map(handleEvent))
+        .then((result) => res.json(result));
+});
+
+function handleEvent(event) {
+
+    console.log(event);
+    if (event.type === 'message' && event.message.type === 'text') {
+        handleMessageEvent(event);
+    } else {
+        return Promise.resolve(null);
+    }
+}
+
+function handleMessageEvent(event) {
+    var msg = {
+        type: 'text',
+        text: 'สวัสดีครัช'
+    };
+
+    return client.replyMessage(event.replyToken, msg);
+}
+
+app.set('port', (process.env.PORT || 5000));
+
+app.listen(app.get('port'), function () {
+    console.log('run at port', app.get('port'));
+});
+
+module.exports = router;
