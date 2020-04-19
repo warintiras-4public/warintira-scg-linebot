@@ -1,10 +1,11 @@
 const express = require('express');
 const line = require('@line/bot-sdk');
 const router = express.Router();
-
-require('dotenv').config();
+require('dotenv').config('./.env');
 
 const app = express();
+
+app.use(express.json());
 
 const config = {
     channelAccessToken: process.env.channelAccessToken,

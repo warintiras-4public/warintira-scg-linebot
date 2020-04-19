@@ -1,5 +1,5 @@
 const express = require('express');
-const linebot = require('./routes/LINEBOT');
+const linebot = require('./controllers/LINEBOT');
 
 const app = express();
 
